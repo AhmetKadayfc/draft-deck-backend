@@ -1,6 +1,6 @@
 .DS_STORE
 
 .venv
-__py_cache__
+__pycache__
 
 .env
