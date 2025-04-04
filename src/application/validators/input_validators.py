@@ -3,7 +3,7 @@ from typing import Tuple, Optional, Dict, Any, List
 import uuid
 from datetime import datetime
 
-from domain.exceptions.domain_exceptions import ValidationException
+from src.domain.exceptions.domain_exceptions import ValidationException
 
 
 def validate_email(email: str) -> Tuple[bool, Optional[str]]:
@@ -154,7 +154,7 @@ def validate_thesis_input(title: str, thesis_type: str) -> None:
     if len(title) > 255:
         raise ValidationException("Thesis title must not exceed 255 characters")
     
-    from domain.value_objects.status import ThesisType
+    from src.domain.value_objects.status import ThesisType
     valid_types = ThesisType.values()
     
     if thesis_type not in valid_types:
@@ -202,7 +202,7 @@ def validate_status_transition(current_status: str, new_status: str) -> None:
     Raises:
         ValidationException: If transition is invalid
     """
-    from domain.value_objects.status import ThesisStatus, VALID_STATUS_TRANSITIONS
+    from src.domain.value_objects.status import ThesisStatus, VALID_STATUS_TRANSITIONS
     
     try:
         current = ThesisStatus(current_status)

@@ -7,11 +7,11 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 from uuid import UUID
 
-from application.interfaces.services.notification_service import NotificationService
-from application.interfaces.repositories.user_repository import UserRepository
-from application.interfaces.repositories.thesis_repository import ThesisRepository
-from application.interfaces.repositories.feedback_repository import FeedbackRepository
-from domain.value_objects.status import NotificationType, UserRole
+from src.application.interfaces.services.notification_service import NotificationService
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.application.interfaces.repositories.thesis_repository import ThesisRepository
+from src.application.interfaces.repositories.feedback_repository import FeedbackRepository
+from src.domain.value_objects.status import NotificationType, UserRole
 
 
 class EmailNotificationService(NotificationService):

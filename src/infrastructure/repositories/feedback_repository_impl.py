@@ -4,10 +4,10 @@ from sqlalchemy import desc, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from application.interfaces.repositories.feedback_repository import FeedbackRepository
-from domain.entities.feedback import Feedback
-from infrastructure.database.models.feedback_model import FeedbackModel, FeedbackCommentModel
-from domain.exceptions.domain_exceptions import EntityNotFoundException, ValidationException
+from src.application.interfaces.repositories.feedback_repository import FeedbackRepository
+from src.domain.entities.feedback import Feedback
+from src.infrastructure.database.models.feedback_model import FeedbackModel, FeedbackCommentModel
+from src.domain.exceptions.domain_exceptions import EntityNotFoundException, ValidationException
 
 
 class FeedbackRepositoryImpl(FeedbackRepository):

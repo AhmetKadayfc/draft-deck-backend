@@ -2,12 +2,12 @@ from flask import Blueprint, request, jsonify, g
 from flask_cors import cross_origin
 from marshmallow import ValidationError
 
-from application.use_cases.auth.login_use_case import LoginUseCase
-from application.use_cases.auth.register_use_case import RegisterUseCase
-from application.dtos.user_dto import LoginDTO, UserCreateDTO
-from api.middleware.auth_middleware import authenticate, refresh_auth
-from domain.exceptions.domain_exceptions import ValidationException
-from api.schemas.request.auth_schemas import (
+from src.application.use_cases.auth.login_use_case import LoginUseCase
+from src.application.use_cases.auth.register_use_case import RegisterUseCase
+from src.application.dtos.user_dto import LoginDTO, UserCreateDTO
+from src.api.middleware.auth_middleware import authenticate, refresh_auth
+from src.domain.exceptions.domain_exceptions import ValidationException
+from src.api.schemas.request.auth_schemas import (
     LoginSchema, RegisterSchema, PasswordResetRequestSchema, PasswordResetSchema
 )
 

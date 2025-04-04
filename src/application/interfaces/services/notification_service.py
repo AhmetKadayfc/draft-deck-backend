@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
 from uuid import UUID
 
-from domain.value_objects.status import NotificationType
+from src.domain.value_objects.status import NotificationType
 
 
 class NotificationService(ABC):

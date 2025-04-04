@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, validate, validates, ValidationError
 import re
 
-from domain.value_objects.status import UserRole
+from src.domain.value_objects.status import UserRole
 
 
 class LoginSchema(Schema):

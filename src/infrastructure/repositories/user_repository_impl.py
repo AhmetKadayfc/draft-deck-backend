@@ -3,11 +3,11 @@ from uuid import UUID
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from application.interfaces.repositories.user_repository import UserRepository
-from domain.entities.user import User
-from domain.value_objects.status import UserRole
-from infrastructure.database.models.user_model import UserModel
-from domain.exceptions.domain_exceptions import EntityNotFoundException, ValidationException
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.domain.entities.user import User
+from src.domain.value_objects.status import UserRole
+from src.infrastructure.database.models.user_model import UserModel
+from src.domain.exceptions.domain_exceptions import EntityNotFoundException, ValidationException
 
 
 class UserRepositoryImpl(UserRepository):

@@ -4,14 +4,14 @@ from marshmallow import ValidationError
 from uuid import UUID
 import io
 
-from application.use_cases.feedback.provide_feedback_use_case import ProvideFeedbackUseCase
-from application.dtos.feedback_dto import FeedbackCreateDTO, FeedbackUpdateDTO, FeedbackExportDTO
-from api.middleware.auth_middleware import authenticate
-from api.middleware.rbac_middleware import (
+from src.application.use_cases.feedback.provide_feedback_use_case import ProvideFeedbackUseCase
+from src.application.dtos.feedback_dto import FeedbackCreateDTO, FeedbackUpdateDTO, FeedbackExportDTO
+from src.api.middleware.auth_middleware import authenticate
+from src.api.middleware.rbac_middleware import (
     require_advisor, thesis_owner_or_advisor
 )
-from domain.exceptions.domain_exceptions import ValidationException, EntityNotFoundException
-from api.schemas.request.feedback_schemas import (
+from src.domain.exceptions.domain_exceptions import ValidationException, EntityNotFoundException
+from src.api.schemas.request.feedback_schemas import (
     FeedbackCreateSchema, FeedbackUpdateSchema, FeedbackExportSchema
 )
 

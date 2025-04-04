@@ -3,17 +3,17 @@ from flask_cors import cross_origin
 from marshmallow import ValidationError
 import io
 
-from application.use_cases.thesis.submit_thesis_use_case import SubmitThesisUseCase
-from application.dtos.thesis_dto import ThesisCreateDTO, ThesisUpdateDTO, ThesisStatusUpdateDTO
-from api.middleware.auth_middleware import authenticate
-from api.middleware.rbac_middleware import (
+from src.application.use_cases.thesis.submit_thesis_use_case import SubmitThesisUseCase
+from src.application.dtos.thesis_dto import ThesisCreateDTO, ThesisUpdateDTO, ThesisStatusUpdateDTO
+from src.api.middleware.auth_middleware import authenticate
+from src.api.middleware.rbac_middleware import (
     require_student, require_advisor, thesis_owner_or_advisor
 )
-from domain.exceptions.domain_exceptions import (
+from src.domain.exceptions.domain_exceptions import (
     ValidationException, EntityNotFoundException, FileStorageException
 )
-from domain.value_objects.status import ThesisStatus
-from api.schemas.request.thesis_schemas import (
+from src.domain.value_objects.status import ThesisStatus
+from src.api.schemas.request.thesis_schemas import (
     ThesisCreateSchema, ThesisUpdateSchema, ThesisStatusUpdateSchema
 )
 

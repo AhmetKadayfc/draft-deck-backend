@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from domain.value_objects.status import UserRole
+from src.domain.value_objects.status import UserRole
 
 
 @dataclass

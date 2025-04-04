@@ -2,7 +2,7 @@ from functools import wraps
 from flask import request, jsonify, g
 import os
 
-from application.interfaces.services.auth_service import AuthService
+from src.application.interfaces.services.auth_service import AuthService
 
 
 def get_token_from_header():

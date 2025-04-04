@@ -8,8 +8,8 @@ from uuid import UUID
 import io
 import mimetypes
 
-from application.interfaces.services.storage_service import StorageService
-from domain.exceptions.domain_exceptions import FileStorageException
+from src.application.interfaces.services.storage_service import StorageService
+from src.domain.exceptions.domain_exceptions import FileStorageException
 
 
 class CloudinaryStorageService(StorageService):

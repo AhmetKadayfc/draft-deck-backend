@@ -4,11 +4,11 @@ from sqlalchemy import desc, func, or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from application.interfaces.repositories.thesis_repository import ThesisRepository
-from domain.entities.thesis import Thesis
-from domain.value_objects.status import ThesisStatus, ThesisType
-from infrastructure.database.models.thesis_model import ThesisModel
-from domain.exceptions.domain_exceptions import EntityNotFoundException, ValidationException
+from src.application.interfaces.repositories.thesis_repository import ThesisRepository
+from src.domain.entities.thesis import Thesis
+from src.domain.value_objects.status import ThesisStatus, ThesisType
+from src.infrastructure.database.models.thesis_model import ThesisModel
+from src.domain.exceptions.domain_exceptions import EntityNotFoundException, ValidationException
 
 
 class ThesisRepositoryImpl(ThesisRepository):

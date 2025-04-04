@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify, g
 from flask_cors import cross_origin
 from uuid import UUID
 
-from api.middleware.auth_middleware import authenticate
-from api.middleware.rbac_middleware import require_admin
-from domain.value_objects.status import UserRole
+from src.api.middleware.auth_middleware import authenticate
+from src.api.middleware.rbac_middleware import require_admin
+from src.domain.value_objects.status import UserRole
 
 
 def create_admin_routes(

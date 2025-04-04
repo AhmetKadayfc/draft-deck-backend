@@ -5,9 +5,9 @@ from typing import Dict, Optional, Tuple
 from uuid import UUID
 import json
 
-from application.interfaces.services.auth_service import AuthService
-from application.interfaces.repositories.user_repository import UserRepository
-from domain.entities.user import User
+from src.application.interfaces.services.auth_service import AuthService
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.domain.entities.user import User
 
 
 class JwtService(AuthService):

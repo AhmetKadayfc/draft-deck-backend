@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional, Dict
 from uuid import UUID
 
-from domain.entities.feedback import Feedback
+from src.domain.entities.feedback import Feedback
 
 
 class FeedbackRepository(ABC):

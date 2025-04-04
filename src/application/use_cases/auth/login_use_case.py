@@ -1,9 +1,9 @@
 from typing import Optional
 
-from application.dtos.user_dto import LoginDTO, TokenResponseDTO, UserResponseDTO
-from application.interfaces.repositories.user_repository import UserRepository
-from application.interfaces.services.auth_service import AuthService
-from domain.exceptions.domain_exceptions import ValidationException
+from src.application.dtos.user_dto import LoginDTO, TokenResponseDTO, UserResponseDTO
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.application.interfaces.services.auth_service import AuthService
+from src.domain.exceptions.domain_exceptions import ValidationException
 
 
 class LoginUseCase:

@@ -1,7 +1,7 @@
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
 
-from domain.exceptions.domain_exceptions import (
+from src.domain.exceptions.domain_exceptions import (
     DomainException, ValidationException, EntityNotFoundException,
     AuthorizationException, ThesisAlreadySubmittedException,
     InvalidStatusTransitionException, FileStorageException

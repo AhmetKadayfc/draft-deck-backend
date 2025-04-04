@@ -1,79 +1,128 @@
-from typing import Optional
+from typing import Optional, BinaryIO
+from uuid import UUID
 
-from application.dtos.user_dto import UserCreateDTO, UserResponseDTO
-from application.interfaces.repositories.user_repository import UserRepository
-from application.interfaces.services.auth_service import AuthService
-from application.interfaces.services.notification_service import NotificationService
-from domain.entities.user import User
-from domain.exceptions.domain_exceptions import ValidationException
-from domain.value_objects.status import UserRole, NotificationType
+from src.application.dtos.thesis_dto import ThesisCreateDTO, ThesisResponseDTO
+from src.application.interfaces.repositories.thesis_repository import ThesisRepository
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.application.interfaces.services.storage_service import StorageService
+from src.application.interfaces.services.notification_service import NotificationService
+from src.domain.entities.thesis import Thesis
+from src.domain.exceptions.domain_exceptions import ValidationException, FileStorageException
+from src.domain.value_objects.status import ThesisType, ThesisStatus, UserRole, NotificationType
 
 
-class RegisterUseCase:
-    """Use case for user registration"""
+class SubmitThesisUseCase:
+    """Use case for submitting a thesis"""
 
     def __init__(
         self,
+        thesis_repository: ThesisRepository,
         user_repository: UserRepository,
-        auth_service: AuthService,
+        storage_service: StorageService,
         notification_service: Optional[NotificationService] = None
     ):
+        self.thesis_repository = thesis_repository
         self.user_repository = user_repository
-        self.auth_service = auth_service
+        self.storage_service = storage_service
         self.notification_service = notification_service
 
-    def execute(self, dto: UserCreateDTO) -> UserResponseDTO:
+    def execute(
+        self,
+        dto: ThesisCreateDTO,
+        student_id: UUID,
+        file_data: Optional[BinaryIO] = None,
+        file_name: Optional[str] = None
+    ) -> ThesisResponseDTO:
         """
-        Register a new user
+        Submit a new thesis
         
         Args:
-            dto: User creation data
+            dto: Thesis creation data
+            student_id: ID of the student submitting the thesis
+            file_data: Binary file data (optional)
+            file_name: Original filename (optional)
             
         Returns:
-            UserResponseDTO with created user data
+            ThesisResponseDTO with created thesis data
             
         Raises:
             ValidationException: If validation fails
+            FileStorageException: If file storage fails
         """
-        # Check if email already exists
-        existing_user = self.user_repository.get_by_email(dto.email)
-        if existing_user:
-            raise ValidationException("Email is already registered")
+        # Validate student exists and has student role
+        student = self.user_repository.get_by_id(student_id)
+        if not student:
+            raise ValidationException("Student not found")
 
-        # Check if student ID already exists (for students)
-        if dto.role == UserRole.STUDENT and dto.student_id:
-            existing_student = self.user_repository.get_by_student_id(
-                dto.student_id)
-            if existing_student:
-                raise ValidationException("Student ID is already registered")
+        if student.role != UserRole.STUDENT:
+            raise ValidationException("Only students can submit theses")
 
-        # Hash password
-        password_hash = self.auth_service.hash_password(dto.password)
+        # Parse thesis type
+        try:
+            thesis_type = ThesisType(dto.thesis_type.lower())
+        except ValueError:
+            raise ValidationException(
+                f"Invalid thesis type. Must be one of: {', '.join(ThesisType.values())}")
 
-        # Create user entity
-        user = User(
-            email=dto.email,
-            first_name=dto.first_name,
-            last_name=dto.last_name,
-            role=dto.role,
-            password_hash=password_hash,
-            department=dto.department,
-            student_id=dto.student_id
+        # Create thesis entity
+        thesis = Thesis(
+            title=dto.title,
+            student_id=student_id,
+            thesis_type=thesis_type,
+            description=dto.description,
+            metadata=dto.metadata,
+            status=ThesisStatus.DRAFT
         )
 
-        # Save user
-        created_user = self.user_repository.create(user)
+        # Handle file upload if provided
+        file_info = None
+        if file_data and file_name:
+            # Validate file
+            is_valid, error_message = self.storage_service.validate_file(
+                file_data, file_name)
+            if not is_valid:
+                raise ValidationException(f"Invalid file: {error_message}")
 
-        # Send welcome notification if notification service is available
-        if self.notification_service:
-            self.notification_service.send_notification(
-                user_id=created_user.id,
-                notification_type=NotificationType.NEW_SUBMISSION,
-                data={
-                    "message": f"Welcome to the Thesis Management System, {created_user.first_name}!"
-                },
-                send_email=True
-            )
+            # Upload file
+            try:
+                file_info = self.storage_service.upload_file(
+                    file_data=file_data,
+                    file_name=file_name,
+                    user_id=student_id,
+                    thesis_id=thesis.id
+                )
+
+                # Update thesis with file info
+                thesis.update_file_info(
+                    file_path=file_info.get('file_path'),
+                    file_name=file_info.get('file_name'),
+                    file_size=file_info.get('file_size'),
+                    file_type=file_info.get('file_type')
+                )
+            except Exception as e:
+                raise FileStorageException(f"Failed to upload file: {str(e)}")
+
+        # Save thesis
+        created_thesis = self.thesis_repository.create(thesis)
+
+        # Send notification if notification service is available
+        if self.notification_service and thesis_type == ThesisType.FINAL:
+            # Notify advisors about the submission
+            self.notification_service.notify_new_thesis_submission(
+                created_thesis.id)
+
+        # Get student name for response
+        student_name = student.full_name()
+
+        # Generate download URL if file was uploaded
+        download_url = None
+        if file_info and 'file_path' in file_info:
+            download_url = self.storage_service.generate_download_link(
+                file_info['file_path'])
 
         # Return response
-        return UserResponseDTO.from_entity(created_user)
+        return ThesisResponseDTO.from_entity(
+            created_thesis,
+            student_name=student_name,
+            download_url=download_url
+        )

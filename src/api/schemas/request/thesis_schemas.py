@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validate, validates, ValidationError
 
-from domain.value_objects.status import ThesisStatus, ThesisType
+from src.domain.value_objects.status import ThesisStatus, ThesisType
 
 
 class ThesisCreateSchema(Schema):

@@ -2,7 +2,7 @@ from functools import wraps
 from flask import request, jsonify, g
 from typing import List, Union, Callable
 
-from domain.value_objects.status import UserRole
+from src.domain.value_objects.status import UserRole
 
 
 def require_role(allowed_roles: Union[UserRole, List[UserRole]]):

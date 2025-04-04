@@ -10,10 +10,10 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
-from domain.entities.feedback import Feedback, FeedbackComment
-from domain.entities.thesis import Thesis
-from domain.entities.user import User
-from application.interfaces.services.storage_service import StorageService
+from src.domain.entities.feedback import Feedback, FeedbackComment
+from src.domain.entities.thesis import Thesis
+from src.domain.entities.user import User
+from src.application.interfaces.services.storage_service import StorageService
 
 
 class PdfService:

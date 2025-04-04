@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy import Column, String, Boolean, DateTime, Enum
 from sqlalchemy.dialects.mysql import CHAR
 
-from infrastructure.database.connection import Base
-from domain.value_objects.status import UserRole
+from src.infrastructure.database.connection import Base
+from src.domain.value_objects.status import UserRole
 
 
 class UserModel(Base):
@@ -26,7 +26,7 @@ class UserModel(Base):
 
     def to_entity(self):
         """Convert model to domain entity"""
-        from domain.entities.user import User
+        from src.domain.entities.user import User
 
         return User(
             id=uuid.UUID(self.id),

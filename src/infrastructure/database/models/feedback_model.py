@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.dialects.mysql import CHAR
 from sqlalchemy.orm import relationship
 
-from infrastructure.database.connection import Base
+from src.infrastructure.database.connection import Base
 
 
 class FeedbackCommentModel(Base):
@@ -26,7 +26,7 @@ class FeedbackCommentModel(Base):
 
     def to_entity(self):
         """Convert model to domain entity"""
-        from domain.entities.feedback import FeedbackComment
+        from src.domain.entities.feedback import FeedbackComment
 
         return FeedbackComment(
             id=uuid.UUID(self.id),
@@ -74,7 +74,7 @@ class FeedbackModel(Base):
 
     def to_entity(self):
         """Convert model to domain entity"""
-        from domain.entities.feedback import Feedback
+        from src.domain.entities.feedback import Feedback
 
         comments = [comment.to_entity() for comment in self.comments]
 

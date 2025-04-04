@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, Dict
 from uuid import UUID
 
-from domain.value_objects.status import ThesisStatus, ThesisType
+from src.domain.value_objects.status import ThesisStatus, ThesisType
 
 
 @dataclass

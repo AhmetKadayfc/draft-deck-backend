@@ -1,14 +1,14 @@
 from typing import Optional
 from uuid import UUID
 
-from application.dtos.feedback_dto import FeedbackCreateDTO, FeedbackResponseDTO
-from application.interfaces.repositories.feedback_repository import FeedbackRepository
-from application.interfaces.repositories.thesis_repository import ThesisRepository
-from application.interfaces.repositories.user_repository import UserRepository
-from application.interfaces.services.notification_service import NotificationService
-from domain.entities.feedback import Feedback, FeedbackComment
-from domain.exceptions.domain_exceptions import ValidationException, EntityNotFoundException
-from domain.value_objects.status import UserRole, ThesisStatus, NotificationType
+from src.application.dtos.feedback_dto import FeedbackCreateDTO, FeedbackResponseDTO
+from src.application.interfaces.repositories.feedback_repository import FeedbackRepository
+from src.application.interfaces.repositories.thesis_repository import ThesisRepository
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.application.interfaces.services.notification_service import NotificationService
+from src.domain.entities.feedback import Feedback, FeedbackComment
+from src.domain.exceptions.domain_exceptions import ValidationException, EntityNotFoundException
+from src.domain.value_objects.status import UserRole, ThesisStatus, NotificationType
 
 
 class ProvideFeedbackUseCase:

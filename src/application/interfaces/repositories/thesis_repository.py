@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List, Optional, Dict
 from uuid import UUID
 
-from domain.entities.thesis import Thesis
-from domain.value_objects.status import ThesisStatus, ThesisType
+from src.domain.entities.thesis import Thesis
+from src.domain.value_objects.status import ThesisStatus, ThesisType
 
 
 class ThesisRepository(ABC):

@@ -1,12 +1,12 @@
 from typing import Optional
 
-from application.dtos.user_dto import UserCreateDTO, UserResponseDTO
-from application.interfaces.repositories.user_repository import UserRepository
-from application.interfaces.services.auth_service import AuthService
-from application.interfaces.services.notification_service import NotificationService
-from domain.entities.user import User
-from domain.exceptions.domain_exceptions import ValidationException
-from domain.value_objects.status import UserRole, NotificationType
+from src.application.dtos.user_dto import UserCreateDTO, UserResponseDTO
+from src.application.interfaces.repositories.user_repository import UserRepository
+from src.application.interfaces.services.auth_service import AuthService
+from src.application.interfaces.services.notification_service import NotificationService
+from src.domain.entities.user import User
+from src.domain.exceptions.domain_exceptions import ValidationException
+from src.domain.value_objects.status import UserRole, NotificationType
 
 
 class RegisterUseCase:
