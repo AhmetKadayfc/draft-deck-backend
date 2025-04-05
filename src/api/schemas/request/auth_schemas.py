@@ -61,18 +61,40 @@ class PasswordResetRequestSchema(Schema):
                          "required": "Email is required"})
 
 
-class PasswordResetSchema(Schema):
-    """Schema for password reset confirmation validation"""
-    token = fields.String(
-        required=True,
-        error_messages={"required": "Token is required"}
-    )
+class PasswordResetConfirmSchema(Schema):
+    """Schema for password reset code confirmation"""
+    email = fields.Email(required=True, error_messages={"required": "Email is required"})
+    code = fields.String(required=True, validate=validate.Length(equal=5), error_messages={
+        "required": "Reset code is required", 
+        "equal": "Reset code must be 5 digits"
+    })
+    
+    @validates_schema
+    def validate_fields(self, data, **kwargs):
+        # Ensure code is only digits
+        if not data.get("code", "").isdigit():
+            raise ValidationError("Reset code must contain only digits", "code")
+
+
+class PasswordResetCompleteSchema(Schema):
+    """Schema for password reset completion (setting new password)"""
+    email = fields.Email(required=True, error_messages={"required": "Email is required"})
+    code = fields.String(required=True, validate=validate.Length(equal=5), error_messages={
+        "required": "Reset code is required", 
+        "equal": "Reset code must be 5 digits"
+    })
     new_password = fields.String(
         required=True,
         validate=validate.Length(
             min=8, error="Password must be at least 8 characters long"),
         error_messages={"required": "New password is required"}
     )
+    
+    @validates_schema
+    def validate_fields(self, data, **kwargs):
+        # Ensure code is only digits
+        if not data.get("code", "").isdigit():
+            raise ValidationError("Reset code must contain only digits", "code")
 
 
 class EmailVerificationSchema(Schema):

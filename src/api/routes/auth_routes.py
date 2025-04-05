@@ -11,8 +11,8 @@ from src.api.middleware.auth_middleware import authenticate, refresh_auth
 from src.domain.exceptions.domain_exceptions import ValidationException
 from src.domain.value_objects.status import NotificationType, UserRole
 from src.api.schemas.request.auth_schemas import (
-    LoginSchema, RegisterSchema, PasswordResetRequestSchema, PasswordResetSchema, 
-    EmailVerificationSchema
+    LoginSchema, RegisterSchema, PasswordResetRequestSchema, PasswordResetConfirmSchema,
+    PasswordResetCompleteSchema, EmailVerificationSchema
 )
 
 
@@ -201,13 +201,28 @@ def create_auth_routes(
             schema = PasswordResetRequestSchema()
             data = schema.load(request.json)
 
-            # Generate reset token
-            reset_token = auth_service.generate_password_reset_token(
-                data["email"])
+            # Generate reset code
+            reset_code = auth_service.generate_password_reset_token(data["email"])
+            
+            # If email exists and code was generated, send email with reset code
+            if reset_code and auth_service.user_repository.get_by_email(data["email"]):
+                user = auth_service.user_repository.get_by_email(data["email"])
+                
+                # Send email with reset code if notification service is available
+                if hasattr(register_use_case, 'notification_service') and register_use_case.notification_service:
+                    register_use_case.notification_service.send_notification(
+                        user_id=user.id,
+                        notification_type=NotificationType.PASSWORD_RESET,
+                        data={
+                            "name": f"{user.first_name}",
+                            "reset_code": reset_code
+                        },
+                        send_email=True
+                    )
 
             # Even if email doesn't exist, return success to prevent user enumeration
             return jsonify({
-                "message": "If the email exists, a password reset link has been sent"
+                "message": "If the email exists, a password reset code has been sent"
             }), 200
 
         except ValidationError as e:
@@ -219,33 +234,69 @@ def create_auth_routes(
     @auth_bp.route("/password-reset/confirm", methods=["POST"])
     @cross_origin()
     def confirm_password_reset():
-        """Confirm password reset"""
+        """Confirm password reset code"""
         try:
             # Parse and validate input using schema
-            schema = PasswordResetSchema()
+            schema = PasswordResetConfirmSchema()
             data = schema.load(request.json)
 
-            # Verify reset token
-            email = auth_service.verify_password_reset_token(data["token"])
-
-            if not email:
-                return jsonify({
-                    "error": "Invalid token",
-                    "message": "Password reset token is invalid or expired"
-                }), 400
-
             # Get user by email
-            user = auth_service.user_repository.get_by_email(email)
+            user = auth_service.user_repository.get_by_email(data["email"])
 
             if not user:
                 return jsonify({
-                    "error": "User not found",
-                    "message": "User does not exist"
+                    "error": "Invalid email",
+                    "message": "Email not found"
                 }), 404
 
-            # Update password
-            user.password_hash = auth_service.hash_password(
-                data["new_password"])
+            # Verify reset code
+            if not auth_service.verify_password_reset_token(data["email"], data["code"]):
+                return jsonify({
+                    "error": "Invalid reset code",
+                    "message": "Password reset code is invalid or expired"
+                }), 400
+
+            # Return success
+            return jsonify({
+                "message": "Reset code verified successfully",
+                "email": data["email"]
+            }), 200
+
+        except ValidationError as e:
+            return jsonify({"error": "Validation error", "details": e.messages}), 400
+
+        except Exception as e:
+            return jsonify({"error": "Server error", "message": str(e)}), 500
+            
+    @auth_bp.route("/password-reset/complete", methods=["POST"])
+    @cross_origin()
+    def complete_password_reset():
+        """Complete password reset with new password"""
+        try:
+            # Parse and validate input using schema
+            schema = PasswordResetCompleteSchema()
+            data = schema.load(request.json)
+
+            # Get user by email
+            user = auth_service.user_repository.get_by_email(data["email"])
+
+            if not user:
+                return jsonify({
+                    "error": "Invalid email",
+                    "message": "Email not found"
+                }), 404
+
+            # Verify reset code
+            if not auth_service.verify_password_reset_token(data["email"], data["code"]):
+                return jsonify({
+                    "error": "Invalid reset code",
+                    "message": "Password reset code is invalid or expired"
+                }), 400
+
+            # Update password and clear reset code
+            user.password_hash = auth_service.hash_password(data["new_password"])
+            user.verification_code = None
+            user.verification_code_expiry = None
             auth_service.user_repository.update(user)
 
             # Return response

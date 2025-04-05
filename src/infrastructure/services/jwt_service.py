@@ -1,5 +1,7 @@
 import os
 import jwt
+import random
+import string
 from datetime import datetime, timedelta
 from typing import Dict, Optional, Tuple
 from uuid import UUID
@@ -133,32 +135,33 @@ class JwtService(AuthService):
         return True
 
     def generate_password_reset_token(self, user_email: str) -> Optional[str]:
-        """Generate a password reset token"""
+        """Generate a password reset code and store in user record"""
         user = self.user_repository.get_by_email(user_email)
 
         if not user:
             return None
+            
+        # Generate a 5-digit reset code
+        reset_code = self._generate_reset_code()
+        
+        # Store the reset code in the user record
+        user.set_password_reset_code(reset_code, 24)  # 24 hour expiry
+        
+        # Update the user in the repository
+        self.user_repository.update(user)
 
-        now = datetime.utcnow()
-        payload = {
-            "sub": str(user.id),
-            "email": user.email,
-            "type": "password_reset",
-            "iat": now,
-            "exp": now + timedelta(hours=24)  # Reset token valid for 24 hours
-        }
+        return reset_code
+        
+    def _generate_reset_code(self, length: int = 5) -> str:
+        """Generate a random numeric reset code"""
+        return ''.join(random.choices(string.digits, k=length))
 
-        return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
+    def verify_password_reset_token(self, email: str, reset_code: str) -> bool:
+        """Verify a password reset code for the specified email"""
+        user = self.user_repository.get_by_email(email)
 
-    def verify_password_reset_token(self, token: str) -> Optional[str]:
-        """Verify a password reset token and return the associated email"""
-        is_valid, payload = self.verify_token(token)
+        if not user:
+            return False
 
-        if not is_valid:
-            return None
-
-        # Check token type
-        if payload.get("type") != "password_reset":
-            return None
-
-        return payload.get("email")
+        # Verify the reset code
+        return user.verify_password_reset_code(reset_code)

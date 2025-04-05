@@ -3,7 +3,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
 from uuid import UUID
 
@@ -317,8 +317,8 @@ class EmailNotificationService(NotificationService):
 
         return student_notification and advisor_notification
 
-    def _get_notification_email_content(self, notification_type: NotificationType, data: Dict) -> tuple[str, str]:
-        """Generate subject and body for notification emails"""
+    def _get_notification_email_content(self, notification_type: NotificationType, data: Dict[str, Any]) -> Optional[Tuple[str, str]]:
+        """Get email subject and body for a notification type"""
         if notification_type == NotificationType.NEW_SUBMISSION:
             subject = f"New Thesis Submission: {data.get('thesis_title', 'Untitled')}"
             body = f"A new thesis has been submitted by {data.get('student_name', 'a student')}.\n\n"
@@ -335,6 +335,17 @@ class EmailNotificationService(NotificationService):
             body += f"Verification Code: {data.get('verification_code', '')}\n\n"
             body += "This code will expire in 24 hours.\n\n"
             body += "If you did not register for an account, please ignore this email.\n\n"
+            body += "Best regards,\nThe Draft Deck Team"
+            
+            return subject, body
+
+        elif notification_type == NotificationType.PASSWORD_RESET:
+            subject = "Password Reset Request - Draft Deck"
+            body = f"Hello {data.get('name', 'User')},\n\n"
+            body += "We received a request to reset your password. To proceed with the password reset, please use the following verification code:\n\n"
+            body += f"Reset Code: {data.get('reset_code', '')}\n\n"
+            body += "This code will expire in 24 hours.\n\n"
+            body += "If you did not request a password reset, please ignore this email.\n\n"
             body += "Best regards,\nThe Draft Deck Team"
             
             return subject, body

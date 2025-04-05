@@ -107,3 +107,22 @@ class User:
         self.verification_code_expiry = datetime.utcnow().replace(microsecond=0) + timedelta(hours=expiry_hours)
         self.email_verified = False
         self.updated_at = datetime.utcnow()
+        
+    def set_password_reset_code(self, code: str, expiry_hours: int = 24):
+        """Set a new password reset code with expiry"""
+        self.verification_code = code
+        self.verification_code_expiry = datetime.utcnow().replace(microsecond=0) + timedelta(hours=expiry_hours)
+        self.updated_at = datetime.utcnow()
+        
+    def verify_password_reset_code(self, code: str) -> bool:
+        """Verify password reset code"""
+        if not self.verification_code or not self.verification_code_expiry:
+            return False
+        
+        # Check if code is valid and not expired
+        if (self.verification_code == code and 
+            self.verification_code_expiry > datetime.utcnow()):
+            # Keep the code valid for now, it will be cleared when password is reset
+            return True
+        
+        return False
