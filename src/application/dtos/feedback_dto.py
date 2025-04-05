@@ -47,10 +47,10 @@ class FeedbackResponseDTO:
     """DTO for feedback response"""
     id: UUID
     thesis_id: UUID
-    thesis_title: Optional[str] = None
     advisor_id: UUID
-    advisor_name: Optional[str] = None
     overall_comments: str
+    thesis_title: Optional[str] = None
+    advisor_name: Optional[str] = None
     rating: Optional[int] = None
     recommendations: Optional[str] = None
     comments: List[FeedbackCommentResponseDTO] = field(default_factory=list)

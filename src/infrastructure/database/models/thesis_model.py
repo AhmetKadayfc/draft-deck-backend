@@ -5,8 +5,8 @@ from sqlalchemy import Column, String, Integer, DateTime, Enum, Text, ForeignKey
 from sqlalchemy.dialects.mysql import CHAR
 from sqlalchemy.orm import relationship
 
-from infrastructure.database.connection import Base
-from domain.value_objects.status import ThesisStatus, ThesisType
+from src.infrastructure.database.connection import Base
+from src.domain.value_objects.status import ThesisStatus, ThesisType
 
 
 class ThesisModel(Base):
@@ -34,7 +34,7 @@ class ThesisModel(Base):
     rejected_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.utcnow)
-    metadata = Column(JSON, nullable=True)
+    _metadata = Column(JSON, nullable=True)
 
     # Relationships
     student = relationship("UserModel", foreign_keys=[
@@ -44,17 +44,17 @@ class ThesisModel(Base):
 
     def to_entity(self):
         """Convert model to domain entity"""
-        from domain.entities.thesis import Thesis
+        from src.domain.entities.thesis import Thesis
 
         metadata_dict = {}
-        if self.metadata:
-            if isinstance(self.metadata, str):
+        if self._metadata:
+            if isinstance(self._metadata, str):
                 try:
-                    metadata_dict = json.loads(self.metadata)
+                    metadata_dict = json.loads(self._metadata)
                 except (json.JSONDecodeError, TypeError):
                     metadata_dict = {}
             else:
-                metadata_dict = self.metadata
+                metadata_dict = self._metadata
 
         return Thesis(
             id=uuid.UUID(self.id),
@@ -81,12 +81,12 @@ class ThesisModel(Base):
     def from_entity(cls, thesis):
         """Create model from domain entity"""
         metadata_json = None
-        if thesis.metadata:
-            if isinstance(thesis.metadata, dict):
-                metadata_json = thesis.metadata
+        if thesis._metadata:
+            if isinstance(thesis._metadata, dict):
+                metadata_json = thesis._metadata
             else:
                 try:
-                    metadata_json = json.loads(thesis.metadata)
+                    metadata_json = json.loads(thesis._metadata)
                 except (json.JSONDecodeError, TypeError):
                     metadata_json = {}
 

@@ -14,8 +14,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
-# Create SQLAlchemy database URL
-DATABASE_URL = f"mysql+mysqldb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Create engine
 engine = create_engine(
@@ -35,16 +34,18 @@ db_session = scoped_session(SessionFactory)
 Base = declarative_base()
 Base.query = db_session.query_property()
 
+
 def init_db():
     """Initialize database and create all tables"""
     # Import all models here to ensure they are registered with Base
-    from infrastructure.database.models.user_model import UserModel
-    from infrastructure.database.models.thesis_model import ThesisModel
-    from infrastructure.database.models.feedback_model import FeedbackModel
-    
+    from .models.user_model import UserModel
+    from .models.thesis_model import ThesisModel
+    from .models.feedback_model import FeedbackModel
+
     # Create tables
     Base.metadata.create_all(bind=engine)
-    
+
+
 def get_db_session():
     """Get a database session"""
     session = db_session()

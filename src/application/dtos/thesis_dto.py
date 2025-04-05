@@ -51,12 +51,12 @@ class ThesisResponseDTO:
     id: UUID
     title: str
     student_id: UUID
-    student_name: Optional[str] = None
-    advisor_id: Optional[UUID] = None
-    advisor_name: Optional[str] = None
     thesis_type: str
     status: str
     version: int
+    student_name: Optional[str] = None
+    advisor_id: Optional[UUID] = None
+    advisor_name: Optional[str] = None
     description: Optional[str] = None
     file_info: Optional[ThesisFileDTO] = None
     download_url: Optional[str] = None
