@@ -26,7 +26,7 @@ from .infrastructure.services.email_service import EmailNotificationService
 from .application.use_cases.auth.login_use_case import LoginUseCase
 from .application.use_cases.auth.register_use_case import RegisterUseCase
 from .application.use_cases.thesis.submit_thesis_use_case import SubmitThesisUseCase
-from .application.use_cases.thesis.get_thesis_use_case import GetThesisUseCase
+# from .application.use_cases.thesis.get_thesis_use_case import GetThesisUseCase
 # from .application.use_cases.feedback.export_feedback_use_case import ExportFeedbackUseCase
 from .application.use_cases.feedback.provide_feedback_use_case import ProvideFeedbackUseCase
 

@@ -7,6 +7,7 @@ from src.application.use_cases.auth.register_use_case import RegisterUseCase
 from src.application.dtos.user_dto import LoginDTO, UserCreateDTO
 from src.api.middleware.auth_middleware import authenticate, refresh_auth
 from src.domain.exceptions.domain_exceptions import ValidationException
+from src.domain.value_objects.status import UserRole
 from src.api.schemas.request.auth_schemas import (
     LoginSchema, RegisterSchema, PasswordResetRequestSchema, PasswordResetSchema
 )
@@ -30,13 +31,29 @@ def create_auth_routes(
             schema = RegisterSchema()
             data = schema.load(request.json)
 
+            # Convert role string to UserRole enum
+            role_str = data["role"].lower()
+            try:
+                # Try direct conversion
+                role = UserRole(role_str)
+            except ValueError:
+                # Fallback to manual mapping for case variations or custom handling
+                if role_str == "student":
+                    role = UserRole.STUDENT
+                elif role_str == "advisor":
+                    role = UserRole.ADVISOR
+                elif role_str == "admin":
+                    role = UserRole.ADMIN
+                else:
+                    raise ValidationException(f"Invalid role: {role_str}")
+
             # Create DTO
             user_dto = UserCreateDTO(
                 email=data["email"],
                 first_name=data["first_name"],
                 last_name=data["last_name"],
                 password=data["password"],
-                role=data["role"],
+                role=role,
                 department=data.get("department"),
                 student_id=data.get("student_id")
             )

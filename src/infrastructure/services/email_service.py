@@ -30,13 +30,12 @@ class EmailNotificationService(NotificationService):
         # Email configuration
         self.smtp_server = os.getenv("MAIL_SERVER", "smtp.gmail.com")
         self.smtp_port = int(os.getenv("MAIL_PORT", 587))
-        self.smtp_username = os.getenv("MAIL_USERNAME", "")
-        self.smtp_password = os.getenv("MAIL_PASSWORD", "")
+        self.smtp_username = os.getenv("MAIL_USERNAME")
+        self.smtp_password = os.getenv("MAIL_PASSWORD")
         self.default_sender = os.getenv(
             "MAIL_DEFAULT_SENDER", self.smtp_username)
         self.use_tls = os.getenv("MAIL_USE_TLS", "True").lower() in [
             "true", "1", "yes"]
-
         # In-memory notification storage (for demo)
         # In production, use a database table
         self.notifications = []
