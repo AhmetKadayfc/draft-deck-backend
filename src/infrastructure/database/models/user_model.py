@@ -21,6 +21,9 @@ class UserModel(Base):
     department = Column(String(100), nullable=True)
     student_id = Column(String(50), unique=True, nullable=True, index=True)
     is_active = Column(Boolean, default=True)
+    email_verified = Column(Boolean, default=False)
+    verification_code = Column(String(10), nullable=True)
+    verification_code_expiry = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=True, onupdate=datetime.utcnow)
 
@@ -38,6 +41,9 @@ class UserModel(Base):
             department=self.department,
             student_id=self.student_id,
             is_active=self.is_active,
+            email_verified=self.email_verified,
+            verification_code=self.verification_code,
+            verification_code_expiry=self.verification_code_expiry,
             created_at=self.created_at,
             updated_at=self.updated_at
         )
@@ -55,6 +61,9 @@ class UserModel(Base):
             department=user.department,
             student_id=user.student_id,
             is_active=user.is_active,
+            email_verified=user.email_verified,
+            verification_code=user.verification_code,
+            verification_code_expiry=user.verification_code_expiry,
             created_at=user.created_at,
             updated_at=user.updated_at
         )

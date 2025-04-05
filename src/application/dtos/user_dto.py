@@ -38,6 +38,7 @@ class UserResponseDTO:
     department: Optional[str] = None
     student_id: Optional[str] = None
     is_active: bool = True
+    email_verified: bool = False
     created_at: datetime = None
     updated_at: Optional[datetime] = None
 
@@ -53,6 +54,7 @@ class UserResponseDTO:
             department=user.department,
             student_id=user.student_id,
             is_active=user.is_active,
+            email_verified=user.email_verified,
             created_at=user.created_at,
             updated_at=user.updated_at
         )

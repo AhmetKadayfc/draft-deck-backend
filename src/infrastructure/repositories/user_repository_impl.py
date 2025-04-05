@@ -78,6 +78,9 @@ class UserRepositoryImpl(UserRepository):
             user_model.department = user.department
             user_model.student_id = user.student_id
             user_model.is_active = user.is_active
+            user_model.email_verified = user.email_verified
+            user_model.verification_code = user.verification_code
+            user_model.verification_code_expiry = user.verification_code_expiry
             # Don't update password_hash unless it changed
             if user.password_hash and user.password_hash != user_model.password_hash:
                 user_model.password_hash = user.password_hash

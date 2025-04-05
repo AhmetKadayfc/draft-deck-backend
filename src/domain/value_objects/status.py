@@ -43,6 +43,7 @@ class NotificationType(Enum):
     REVISION_REQUESTED = "revision_requested"
     THESIS_APPROVED = "thesis_approved"
     THESIS_REJECTED = "thesis_rejected"
+    EMAIL_VERIFICATION = "email_verification"
 
     @classmethod
     def values(cls):

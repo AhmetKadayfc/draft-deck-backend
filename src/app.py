@@ -25,6 +25,8 @@ from .infrastructure.services.email_service import EmailNotificationService
 # Import use cases
 from .application.use_cases.auth.login_use_case import LoginUseCase
 from .application.use_cases.auth.register_use_case import RegisterUseCase
+from .application.use_cases.auth.verify_email_use_case import VerifyEmailUseCase
+from .application.use_cases.auth.resend_verification_use_case import ResendVerificationUseCase
 from .application.use_cases.thesis.submit_thesis_use_case import SubmitThesisUseCase
 # from .application.use_cases.thesis.get_thesis_use_case import GetThesisUseCase
 # from .application.use_cases.feedback.export_feedback_use_case import ExportFeedbackUseCase
@@ -86,6 +88,8 @@ def create_app(testing=False):
     # Setup use cases
     login_use_case = LoginUseCase(user_repository, jwt_service)
     register_use_case = RegisterUseCase(user_repository, jwt_service, notification_service)
+    verify_email_use_case = VerifyEmailUseCase(user_repository)
+    resend_verification_use_case = ResendVerificationUseCase(user_repository, notification_service)
     submit_thesis_use_case = SubmitThesisUseCase(
         thesis_repository, user_repository, storage_service, notification_service
     )
@@ -95,7 +99,13 @@ def create_app(testing=False):
 
     # Register routes
     app.register_blueprint(
-        create_auth_routes(login_use_case, register_use_case, jwt_service)
+        create_auth_routes(
+            login_use_case, 
+            register_use_case, 
+            jwt_service,
+            verify_email_use_case,
+            resend_verification_use_case
+        )
     )
     app.register_blueprint(
         create_thesis_routes(

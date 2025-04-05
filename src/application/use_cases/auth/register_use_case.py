@@ -1,4 +1,6 @@
 from typing import Optional
+import random
+import string
 
 from src.application.dtos.user_dto import UserCreateDTO, UserResponseDTO
 from src.application.interfaces.repositories.user_repository import UserRepository
@@ -21,6 +23,10 @@ class RegisterUseCase:
         self.user_repository = user_repository
         self.auth_service = auth_service
         self.notification_service = notification_service
+
+    def _generate_verification_code(self, length: int = 5) -> str:
+        """Generate a random numeric verification code"""
+        return ''.join(random.choices(string.digits, k=length))
 
     def execute(self, dto: UserCreateDTO) -> UserResponseDTO:
         """
@@ -50,6 +56,9 @@ class RegisterUseCase:
         # Hash password
         password_hash = self.auth_service.hash_password(dto.password)
 
+        # Generate verification code
+        verification_code = self._generate_verification_code()
+
         # Create user entity
         user = User(
             email=dto.email,
@@ -58,19 +67,24 @@ class RegisterUseCase:
             role=dto.role,
             password_hash=password_hash,
             department=dto.department,
-            student_id=dto.student_id
+            student_id=dto.student_id,
+            email_verified=False
         )
+        
+        # Set the verification code with 24-hour expiry
+        user.set_verification_code(verification_code, 24)
 
         # Save user
         created_user = self.user_repository.create(user)
 
-        # Send welcome notification if notification service is available
+        # Send email verification notification if notification service is available
         if self.notification_service:
             self.notification_service.send_notification(
                 user_id=created_user.id,
-                notification_type=NotificationType.NEW_SUBMISSION,
+                notification_type=NotificationType.EMAIL_VERIFICATION,
                 data={
-                    "message": f"Welcome to the Thesis Management System, {created_user.first_name}!"
+                    "name": f"{created_user.first_name}",
+                    "verification_code": verification_code
                 },
                 send_email=True
             )

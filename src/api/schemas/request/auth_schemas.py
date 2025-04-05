@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate, validates, ValidationError
+from marshmallow import Schema, fields, validate, validates, validates_schema, ValidationError
 import re
 
 from src.domain.value_objects.status import UserRole
@@ -73,3 +73,18 @@ class PasswordResetSchema(Schema):
             min=8, error="Password must be at least 8 characters long"),
         error_messages={"required": "New password is required"}
     )
+
+
+class EmailVerificationSchema(Schema):
+    """Schema for email verification"""
+    email = fields.Email(required=True, error_messages={"required": "Email is required"})
+    code = fields.String(required=True, validate=validate.Length(equal=5), error_messages={
+        "required": "Verification code is required", 
+        "equal": "Verification code must be 5 digits"
+    })
+    
+    @validates_schema
+    def validate_fields(self, data, **kwargs):
+        # Ensure code is only digits
+        if not data.get("code", "").isdigit():
+            raise ValidationError("Verification code must contain only digits", "code")

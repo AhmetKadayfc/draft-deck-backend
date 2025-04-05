@@ -328,6 +328,17 @@ class EmailNotificationService(NotificationService):
 
             return subject, body
 
+        elif notification_type == NotificationType.EMAIL_VERIFICATION:
+            subject = "Verify Your Email - Draft Deck"
+            body = f"Hello {data.get('name', 'User')},\n\n"
+            body += "Thank you for registering with Draft Deck. To verify your email address, please use the following verification code:\n\n"
+            body += f"Verification Code: {data.get('verification_code', '')}\n\n"
+            body += "This code will expire in 24 hours.\n\n"
+            body += "If you did not register for an account, please ignore this email.\n\n"
+            body += "Best regards,\nThe Draft Deck Team"
+            
+            return subject, body
+
         elif notification_type == NotificationType.FEEDBACK_PROVIDED:
             subject = f"Feedback Provided on Thesis: {data.get('thesis_title', 'Untitled')}"
             body = f"Feedback has been provided by {data.get('advisor_name', 'your advisor')}.\n\n"

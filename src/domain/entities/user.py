@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -19,6 +19,9 @@ class User:
     department: Optional[str] = None
     student_id: Optional[str] = None
     is_active: bool = True
+    email_verified: bool = False
+    verification_code: Optional[str] = None
+    verification_code_expiry: Optional[datetime] = None
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = None
 
@@ -81,3 +84,26 @@ class User:
     def has_role(self, role: UserRole) -> bool:
         """Check if user has a specific role"""
         return self.role == role
+
+    def verify_email(self, code: str) -> bool:
+        """Verify email with provided verification code"""
+        if not self.verification_code or not self.verification_code_expiry:
+            return False
+        
+        # Check if code is valid and not expired
+        if (self.verification_code == code and 
+            self.verification_code_expiry > datetime.utcnow()):
+            self.email_verified = True
+            self.verification_code = None
+            self.verification_code_expiry = None
+            self.updated_at = datetime.utcnow()
+            return True
+        
+        return False
+        
+    def set_verification_code(self, code: str, expiry_hours: int = 24):
+        """Set a new verification code with expiry"""
+        self.verification_code = code
+        self.verification_code_expiry = datetime.utcnow().replace(microsecond=0) + timedelta(hours=expiry_hours)
+        self.email_verified = False
+        self.updated_at = datetime.utcnow()
