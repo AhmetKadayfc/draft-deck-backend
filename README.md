@@ -160,10 +160,49 @@ The API will be available at `http://localhost:5000`.
 
 ## Testing
 
+The project includes comprehensive tests for all API endpoints. Tests are divided into two types:
+
+1. **Unit tests**: Tests for specific functions and components
+2. **Integration tests**: Tests for API endpoints and the interaction between components
+
+### Running Tests with unittest
+
+Run all tests using the unittest runner script:
+```bash
+python src/tests/run_tests.py
+```
+
+### Running Tests with pytest
+
 Run tests using pytest:
 ```bash
 pytest
 ```
+
+For more verbose output:
+```bash
+pytest -v
+```
+
+To run specific test files:
+```bash
+pytest src/tests/integration/test_api_endpoints.py
+pytest src/tests/integration/test_api_endpoints_pytest.py
+```
+
+### Test Coverage
+
+To generate a test coverage report:
+```bash
+pytest --cov=src
+```
+
+For a detailed HTML coverage report:
+```bash
+pytest --cov=src --cov-report=html
+```
+
+The HTML report will be generated in the `htmlcov` directory.
 
 ## Deployment
 
