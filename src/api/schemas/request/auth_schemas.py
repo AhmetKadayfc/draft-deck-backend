@@ -49,7 +49,11 @@ class RegisterSchema(Schema):
     @validates("student_id")
     def validate_student_id(self, value):
         """Validate student_id is present for student role"""
-        role = self.get_attribute("role")
+        if hasattr(self, 'context') and 'role' in self.context:
+            role = self.context['role']
+        else:
+            role = self.data.get('role') if hasattr(self, 'data') else None
+            
         if role == UserRole.STUDENT.value and not value:
             raise ValidationError(
                 "Student ID is required for student accounts")
