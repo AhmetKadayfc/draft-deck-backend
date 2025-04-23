@@ -81,12 +81,12 @@ class ThesisModel(Base):
     def from_entity(cls, thesis):
         """Create model from domain entity"""
         metadata_json = None
-        if thesis._metadata:
-            if isinstance(thesis._metadata, dict):
-                metadata_json = thesis._metadata
+        if thesis.metadata:
+            if isinstance(thesis.metadata, dict):
+                metadata_json = thesis.metadata
             else:
                 try:
-                    metadata_json = json.loads(thesis._metadata)
+                    metadata_json = json.loads(thesis.metadata)
                 except (json.JSONDecodeError, TypeError):
                     metadata_json = {}
 
@@ -108,5 +108,5 @@ class ThesisModel(Base):
             rejected_at=thesis.rejected_at,
             created_at=thesis.created_at,
             updated_at=thesis.updated_at,
-            metadata=metadata_json
+            _metadata=metadata_json
         )
