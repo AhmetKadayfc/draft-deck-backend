@@ -7,12 +7,12 @@ from src.application.use_cases.thesis.submit_thesis_use_case import SubmitThesis
 from src.application.dtos.thesis_dto import ThesisCreateDTO, ThesisUpdateDTO, ThesisStatusUpdateDTO
 from src.api.middleware.auth_middleware import authenticate
 from src.api.middleware.rbac_middleware import (
-    require_student, require_advisor, thesis_owner_or_advisor
+    require_admin, require_student, require_advisor, thesis_owner_or_advisor
 )
 from src.domain.exceptions.domain_exceptions import (
     ValidationException, EntityNotFoundException, FileStorageException
 )
-from src.domain.value_objects.status import ThesisStatus
+from src.domain.value_objects.status import ThesisStatus, ThesisType
 from src.api.schemas.request.thesis_schemas import (
     ThesisCreateSchema, ThesisUpdateSchema, ThesisStatusUpdateSchema
 )
@@ -277,13 +277,14 @@ def create_thesis_routes(
                 data = schema.load(request.json)
                 file = None
 
-            # Update thesis fields
-            if "title" in data:
-                thesis.title = data["title"]
+            # Update thesis fields using entity method
+            title = data.get("title")
+            description = data.get("description")
+            thesis_type = ThesisType(data["thesis_type"]) if "thesis_type" in data else None
+            
+            thesis.update_title_description(title, description, thesis_type)
 
-            if "description" in data:
-                thesis.description = data["description"]
-
+            # Update metadata if provided
             if "metadata" in data:
                 thesis.metadata = data["metadata"]
 
@@ -312,6 +313,7 @@ def create_thesis_routes(
                 "thesis": {
                     "id": str(updated_thesis.id),
                     "title": updated_thesis.title,
+                    "thesis_type": updated_thesis.thesis_type.value,
                     "status": updated_thesis.status.value,
                     "updated_at": updated_thesis.updated_at.isoformat() if updated_thesis.updated_at else None
                 }
@@ -440,10 +442,20 @@ def create_thesis_routes(
     @thesis_bp.route("/<thesis_id>/assign", methods=["POST"])
     @cross_origin()
     @authenticate(auth_service)
-    @require_advisor()
+    @require_admin()
     def assign_advisor(thesis_id):
         """Assign an advisor to a thesis"""
         try:
+            # Get advisor_id from request body
+            data = request.get_json()
+            advisor_id = data.get('advisor_id')
+            
+            if not advisor_id:
+                return jsonify({
+                    "error": "Bad request",
+                    "message": "advisor_id is required"
+                }), 400
+
             # Get thesis
             thesis = thesis_repository.get_by_id(thesis_id)
 
@@ -460,8 +472,16 @@ def create_thesis_routes(
                     "message": "This thesis already has an advisor assigned"
                 }), 400
 
-            # Assign current user as advisor
-            thesis.assign_advisor(g.user.id)
+            # Verify that the advisor exists
+            advisor = user_repository.get_by_id(advisor_id)
+            if not advisor:
+                return jsonify({
+                    "error": "Not found",
+                    "message": "Advisor not found"
+                }), 404
+
+            # Assign the provided advisor ID
+            thesis.assign_advisor(advisor_id)
 
             # Save changes
             updated_thesis = thesis_repository.update(thesis)

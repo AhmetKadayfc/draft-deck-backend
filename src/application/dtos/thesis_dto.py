@@ -19,6 +19,7 @@ class ThesisCreateDTO:
 class ThesisUpdateDTO:
     """DTO for thesis update"""
     title: Optional[str] = None
+    thesis_type: Optional[str] = None
     description: Optional[str] = None
     metadata: Optional[Dict] = None
 

@@ -25,6 +25,10 @@ class ThesisUpdateSchema(Schema):
     title = fields.String(
         validate=validate.Length(min=3, max=255),
     )
+    thesis_type = fields.String(
+        validate=validate.OneOf(ThesisType.values(),
+                               error="Invalid thesis type")
+    )
     description = fields.String(allow_none=True)
     metadata = fields.Dict(allow_none=True)
 

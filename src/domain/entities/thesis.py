@@ -87,13 +87,16 @@ class Thesis:
         self.version += 1
         self.updated_at = datetime.utcnow()
 
-    def update_title_description(self, title: Optional[str] = None, description: Optional[str] = None):
-        """Update thesis title and/or description"""
+    def update_title_description(self, title: Optional[str] = None, description: Optional[str] = None, thesis_type: Optional[ThesisType] = None):
+        """Update thesis title, description, and/or thesis type"""
         if title:
             self.title = title
 
         if description:
             self.description = description
+            
+        if thesis_type:
+            self.thesis_type = thesis_type
 
         self.updated_at = datetime.utcnow()
         self._validate()
