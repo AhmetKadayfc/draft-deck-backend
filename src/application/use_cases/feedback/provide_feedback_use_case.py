@@ -103,7 +103,7 @@ class ProvideFeedbackUseCase:
 
         # Get advisor and thesis info for response
         advisor_name = advisor.full_name()
-        thesis_title = thesis.title
+        thesis_title = str(thesis.title) if thesis.title else None
 
         # Return response
         return FeedbackResponseDTO.from_entity(

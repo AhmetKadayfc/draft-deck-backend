@@ -49,8 +49,14 @@ def create_feedback_routes(
                 })
 
             # Create DTO
+            # Ensure thesis_id is a proper UUID object
+            thesis_id = data["thesis_id"]
+            # If thesis_id is already a UUID object, use it directly; otherwise convert from string
+            if not isinstance(thesis_id, UUID):
+                thesis_id = UUID(thesis_id)
+                
             feedback_dto = FeedbackCreateDTO(
-                thesis_id=UUID(data["thesis_id"]),
+                thesis_id=thesis_id,
                 overall_comments=data["overall_comments"],
                 rating=data.get("rating"),
                 recommendations=data.get("recommendations"),
@@ -295,8 +301,11 @@ def create_feedback_routes(
     def export_feedback(feedback_id):
         """Export feedback as PDF"""
         try:
+            # Convert feedback_id to UUID
+            feedback_id = UUID(feedback_id)
+            
             # Get feedback
-            feedback = feedback_repository.get_by_id(UUID(feedback_id))
+            feedback = feedback_repository.get_by_id(feedback_id)
 
             if not feedback:
                 return jsonify({
@@ -351,10 +360,17 @@ def create_feedback_routes(
                 include_original_document=include_original_document
             )
 
+            # Create a filename using string representations of data
+            # Ensure thesis.title is a proper string even if it's a UUID object
+            title_str = str(thesis.title) if thesis.title else "Untitled"
+            # Handle UUID objects by converting to string first
+            safe_title = title_str.replace(' ', '_')
+            filename = f"Feedback_{safe_title}_{feedback.created_at.strftime('%Y-%m-%d')}.pdf"
+            
             # Send file
             return send_file(
                 pdf_buffer,
-                download_name=f"Feedback_{thesis.title}_{feedback.created_at.strftime('%Y-%m-%d')}.pdf",
+                download_name=filename,
                 mimetype="application/pdf",
                 as_attachment=True
             )

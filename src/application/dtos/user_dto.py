@@ -73,7 +73,7 @@ class TokenResponseDTO:
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
-    expires_in: int = 3600  # 1 hour by default
+    expires_in: int = 14400  # 1 hour by default
     user: Optional[UserResponseDTO] = None
 
 

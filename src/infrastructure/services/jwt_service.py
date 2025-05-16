@@ -21,7 +21,7 @@ class JwtService(AuthService):
         self.secret_key = os.getenv(
             "JWT_SECRET_KEY", "default-secret-key-change-me")
         self.access_token_expires = int(
-            os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 3600))  # 1 hour
+            os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 14400))  # 4 hour
         self.refresh_token_expires = int(
             os.getenv("JWT_REFRESH_TOKEN_EXPIRES", 2592000))  # 30 days
         self.algorithm = "HS256"
